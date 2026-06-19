@@ -249,8 +249,11 @@ private:
             int real_id = std::stoi(track.id);
             
             if (matched_live_track_indices.count(i)) {
-                label_memory_[real_id] = yolo_labels[matched_live_track_indices[i]];
-                score_memory_[real_id] = yolo_scores[matched_live_track_indices[i]];
+                double new_score = yolo_scores[matched_live_track_indices[i]];
+                if (new_score > score_memory_[real_id]) {  // only update if more confident
+                    label_memory_[real_id] = yolo_labels[matched_live_track_indices[i]];
+                    score_memory_[real_id] = new_score;
+                }   
             }
 
             std::string final_label;

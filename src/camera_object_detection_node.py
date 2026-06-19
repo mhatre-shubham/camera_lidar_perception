@@ -6,12 +6,18 @@ from vision_msgs.msg import Detection2DArray, Detection2D, ObjectHypothesisWithP
 from cv_bridge import CvBridge
 from ultralytics import YOLO
 import cv2
+import torch
 
 class YoloNode(Node):
     def __init__(self):
         super().__init__('camera_object_detection_node')
         
-        self.model = YOLO('/home/mhatre/ros2_humble/src/camera_lidar_perception/model/yolo11n.pt') 
+        self.model = YOLO('/home/mhatre/ros2_humble/src/camera_lidar_perception/model/yolo11n.pt')
+        if torch.cuda.is_available():
+            self.model.to('cuda')
+            self.get_logger().info("YOLO running on CUDA ")
+        else:
+            self.get_logger().info("YOLO running on CPU ") 
         self.confidence_threshold = 0.5
         self.bridge = CvBridge()
         
